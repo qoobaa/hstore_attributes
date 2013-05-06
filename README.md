@@ -12,7 +12,7 @@ possibility to typecast the value.
       # The hstore column is named 'data'
       hstore_accessor :data, :description
       hstore_accessor :data, :price, :tax, type_cast: :to_i
-      hstore_accessor :data, :available_from, type_cast: ->(value) { value ? value.to_date : nil }
+      hstore_accessor :data, :available_from, type_cast: ->(value) { value.to_s.to_date }
     end
 
 ## Installation
