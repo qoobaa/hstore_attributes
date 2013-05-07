@@ -1,6 +1,7 @@
 require "test_helper"
 
-class Product < DummyModel
+class Product
+  attr_accessor :data
   extend HstoreAttributes
 
   hstore_accessor :data, :name, :description, type_cast: ->(value) { value.to_s.upcase }

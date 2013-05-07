@@ -1,6 +1,7 @@
 require "test_helper"
 
-class Product < DummyModel
+class Product
+  attr_accessor :data
   extend HstoreAttributes
 
   hstore_writer :data, :name, :name_2
@@ -18,11 +19,24 @@ describe "hstore_writer" do
     assert_equal({"name" => "zomg"}, @product.data)
   end
 
+  it "sets name to nil if no hstore" do
+    @product.name = nil
+    assert_equal({"name" => nil}, @product.data)
+  end
+
   it "sets name if empty hstore" do
     hstore = {}
     @product.data = hstore
     @product.name = "zomg"
     assert_equal({"name" => "zomg"}, @product.data)
+    refute_same hstore, @product.data
+  end
+
+  it "sets name to nil if empty hstore" do
+    hstore = {}
+    @product.data = hstore
+    @product.name = nil
+    assert_equal({"name" => nil}, @product.data)
     refute_same hstore, @product.data
   end
 
@@ -34,6 +48,14 @@ describe "hstore_writer" do
     refute_same hstore, @product.data
   end
 
+  it "sets name to nil if already in hstore" do
+    hstore = {"name" => "trolololo"}
+    @product.data = hstore
+    @product.name = nil
+    assert_equal({"name" => nil}, @product.data)
+    refute_same hstore, @product.data
+  end
+
   it "sets name_2 if no hstore" do
     @product.name_2 = "lolo"
     assert_equal({"name_2" => "lolo"}, @product.data)
@@ -41,11 +63,11 @@ describe "hstore_writer" do
 
   it "sets price if no hstore" do
     @product.price = 0
-    assert_equal({"price" => "0"}, @product.data)
+    assert_equal({"price" => 0}, @product.data)
   end
 
   it "sets cents using type_cast function" do
     @product.cents = "1"
-    assert_equal({"cents" => "100"}, @product.data)
+    assert_equal({"cents" => 100}, @product.data)
   end
 end

@@ -1,6 +1,7 @@
 require "test_helper"
 
-class Product < DummyModel
+class Product
+  attr_accessor :data
   extend HstoreAttributes
 
   hstore_reader :data, :price, :price_2, type_cast: :to_i
