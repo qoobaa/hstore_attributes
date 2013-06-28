@@ -2,7 +2,7 @@ require "hstore_attributes/version"
 
 module HstoreAttributes
   def self.convert(value, options = {})
-    if options[:allow_nil] == true and value.nil?
+    if options[:allow_nil] and value.nil?
       nil
     elsif options[:type_cast]
       options[:type_cast].to_proc.call(value)
