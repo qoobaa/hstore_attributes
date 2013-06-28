@@ -7,14 +7,7 @@ class Product
   hstore_reader :data, :price, :price_2, type_cast: :to_i
   hstore_reader :data, :name, type_cast: ->(value) { value.to_s.upcase }
   hstore_reader :data, :description
-
-  def data
-    @data
-  end
-
-  def data=(data)
-    @data = data
-  end
+  hstore_reader :data, :money, type_cast: :to_d, allow_nil: true
 end
 
 describe "hstore_reader" do
@@ -67,5 +60,15 @@ describe "hstore_reader" do
   it "returns upcased name if already in hstore" do
     @product.data = {"name" => "zomg"}
     assert_equal "ZOMG", @product.name
+  end
+
+  it "returns nil for nil money" do
+    @product.data = {"money" => nil}
+    assert_equal nil, @product.money
+  end
+
+  it "returns typecasted money" do
+    @product.data = {"money" => "1.23"}
+    assert_equal BigDecimal.new("1.23"), @product.money
   end
 end

@@ -1,3 +1,5 @@
 require "minitest/autorun"
 require "active_support"
+require "bigdecimal"
+require "bigdecimal/util"
 require "hstore_attributes"

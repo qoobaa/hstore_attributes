@@ -1,13 +1,22 @@
 require "hstore_attributes/version"
 
 module HstoreAttributes
+  def self.convert(value, options = {})
+    if options[:allow_nil] == true and value.nil?
+      nil
+    elsif options[:type_cast]
+      options[:type_cast].to_proc.call(value)
+    else
+      value
+    end
+  end
+
   def hstore_reader(hstore, *attributes)
     options = attributes.extract_options!
     attributes.map(&:to_s).each do |attribute|
       define_method(attribute) do
         value = (send(hstore) || {})[attribute]
-        value = options[:type_cast].to_proc.call(value) if options[:type_cast]
-        value
+        HstoreAttributes.convert(value, options)
       end
     end
   end
@@ -16,7 +25,7 @@ module HstoreAttributes
     options = attributes.extract_options!
     attributes.map(&:to_s).each do |attribute|
       define_method("#{attribute}=") do |value|
-        value = options[:type_cast].to_proc.call(value) if options[:type_cast]
+        value = HstoreAttributes.convert(value, options)
         send("#{hstore}=", (send(hstore) || {}).merge(attribute => value))
       end
     end

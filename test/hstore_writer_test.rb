@@ -7,6 +7,7 @@ class Product
   hstore_writer :data, :name, :name_2
   hstore_writer :data, :price, type_cast: :to_i
   hstore_writer :data, :cents, type_cast: ->(value) { (value.to_f * 100).to_i }
+  hstore_writer :data, :money, type_cast: :to_d, allow_nil: true
 end
 
 describe "hstore_writer" do
@@ -69,5 +70,15 @@ describe "hstore_writer" do
   it "sets cents using type_cast function" do
     @product.cents = "1"
     assert_equal({"cents" => 100}, @product.data)
+  end
+
+  it "sets money using type_cast function" do
+    @product.money = "1.53"
+    assert_equal({"money" => BigDecimal.new("1.53")}, @product.data)
+  end
+
+  it "allows money to be nil function" do
+    @product.money = nil
+    assert_equal({"money" => nil}, @product.data)
   end
 end
