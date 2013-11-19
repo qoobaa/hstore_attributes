@@ -11,10 +11,17 @@ module HstoreAttributes
     end
   end
 
+  def self.attribute_name(name, options)
+    prefix = options[:prefix]
+    suffix = options[:suffix]
+    [prefix, name, suffix].compact.join("_")
+  end
+
   def hstore_reader(hstore, *attributes)
     options = attributes.extract_options!
     attributes.map(&:to_s).each do |attribute|
-      define_method(attribute) do
+      attribute_name = HstoreAttributes.attribute_name(attribute, options)
+      define_method(attribute_name) do
         value = (send(hstore) || {})[attribute]
         HstoreAttributes.convert(value, options)
       end
@@ -24,7 +31,8 @@ module HstoreAttributes
   def hstore_writer(hstore, *attributes)
     options = attributes.extract_options!
     attributes.map(&:to_s).each do |attribute|
-      define_method("#{attribute}=") do |value|
+      attribute_name = HstoreAttributes.attribute_name(attribute, options)
+      define_method("#{attribute_name}=") do |value|
         value = HstoreAttributes.convert(value, options)
         send("#{hstore}=", (send(hstore) || {}).merge(attribute => value))
       end
